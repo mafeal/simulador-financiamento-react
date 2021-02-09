@@ -1,4 +1,5 @@
 import { createGlobalStyle, ThemeProvider } from 'styled-components'
+import Head from '../src/components/Head';
 
 const GlobalStyle = createGlobalStyle`
   body {
@@ -18,6 +19,7 @@ export default function App({ Component, pageProps }) {
   return (
     <>
       <GlobalStyle />
+      <Head />
       <ThemeProvider theme={theme}>
         <Component {...pageProps} />
       </ThemeProvider>

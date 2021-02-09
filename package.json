@@ -7,8 +7,10 @@
     "start": "next start"
   },
   "dependencies": {
+    "bootstrap": "^4.6.0",
     "next": "latest",
     "react": "^16.8.0",
+    "react-bootstrap": "^1.4.3",
     "react-dom": "^16.8.0",
     "react-is": "^16.8.0",
     "styled-components": "^5.0.0"

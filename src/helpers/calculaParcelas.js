@@ -6,18 +6,18 @@ export default function calculaParcelas(nParcelas, taxa, periodo, vAtual) {
     const taxaConvertida = taxa.replace(/[,]+/g, ".")
 
     if (periodo === '% ao ano') {
-        taxaMensal =  (taxaConvertida + 1) / Math.pow((1+(taxaConvertida / 100)), 12)
+        taxaMensal = (Math.pow((1 + (taxaConvertida / 100)), (1/12))) - 1
     } else {
         taxaMensal = taxaConvertida / 100;
     }
     
-    vFuturo = ((1 * vAtual) * Math.pow((1 + taxaMensal),nParcelas)).toFixed(2)
+    vFuturo = ((1 * vAtual) * Math.pow((1 + taxaMensal),nParcelas)).toFixed(2).replace(/\.+/g, ",")
 
     coefFinanceiro = taxaMensal / (1 - Math.pow((1+taxaMensal), -nParcelas))
 
-    parcela = (coefFinanceiro * vAtual).toFixed(2)
+    parcela = (coefFinanceiro * vAtual).toFixed(2).replace(/\.+/g, ",")
 
-    console.log(`A parcele é R$ ${parcela} e o Valor futuro é R$ ${vFuturo}`);
+    console.log(`A parcela é R$ ${parcela} e o Valor futuro é R$ ${vFuturo}`);
 
     return [parcela, vFuturo]
 };

@@ -17,6 +17,14 @@ const StyledButton = styled(Button)`
   }
 `;
 
-export default function ButtonExp() {
-  return <StyledButton size="sm">Calcular</StyledButton>;
+export default function ButtonExp(props) {
+  return (
+    <StyledButton 
+    type={props.type} 
+    onClick={props.onclick}
+    size="sm"
+    >
+      {props.text}
+    </StyledButton>
+  );
 }

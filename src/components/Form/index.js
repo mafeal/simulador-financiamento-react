@@ -6,6 +6,26 @@ import Alert from "react-bootstrap/Alert";
 import moedaHelper from "../../helpers/moedaHelper";
 import calculaParcelas from "../../helpers/calculaParcelas";
 
+function ShowAlert(props) {
+  return (
+    <Alert variant="success">
+      <Alert.Heading>Calculado com sucesso!</Alert.Heading>
+      <p>
+        Seu financiamento ficará em:{" "}
+        <strong>
+          {`${props.resultado.nParcelas}`} parcelas de {`R$ ${props.resultado.parcela}`}
+        </strong>
+        .
+      </p>
+      <hr />
+      <p className="mb-0 bg-warning">
+        <strong>Atenção: </strong>Esse cálculo não leva em consideração o IOF,
+        pois esse pode variar conforme o tipo de operação.
+      </p>
+    </Alert>
+  );
+}
+
 export default function FormCalc() {
   const [nParcelas, setNParcelas] = React.useState("");
   const [taxa, setTaxa] = React.useState("");
@@ -13,32 +33,54 @@ export default function FormCalc() {
   const [vAtual, setVAtual] = React.useState("");
   const [parcela, setParcela] = React.useState("");
   const [vFuturo, setVFuturo] = React.useState("");
+  const [screenState, setScreenState] = React.useState(false);
 
-  const handleClick = () => {
-    // const [vParcela, valorFuturo] = calculaParcelas(
-    //   nParcelas,
-    //   taxa,
-    //   periodo,
-    //   vAtual
-    // );
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    let [vParcela, valorFuturo] = calculaParcelas(
+      nParcelas,
+      taxa,
+      periodo,
+      vAtual
+    );
+    // console.log(`HandleSubmit = ${nParcelas} de ${parcela}`);
+    setParcela(vParcela);
+    setVFuturo(moedaHelper(valorFuturo));
+    setScreenState(true);
+  };
 
-    // console.log("click");
-    // setParcela(vParcela);
-    // setVFuturo(valorFuturo);
-    alert('Clicou!')
+  const resultado = {
+    parcela,
+    nParcelas,
+  };
+
+  const handleClickLimpar = (e) => {
+    e.preventDefault();
+
+    setScreenState(false);
+    setParcela("");
+    setVFuturo("");
+    setNParcelas("");
+    setTaxa("");
+    setVAtual("");
+  }
+
+  const formataMoeda = (valor)  => {
+    const centena = valor * 100 + "";
+    const moeda = moedaHelper(centena);
+    return moeda;
   }
 
   return (
-    <Form
-      on={() => alert('Clicou!')}
-    >
+    <Form onSubmit={(e) => handleSubmit(e)}>
       <Form.Row>
         <Form.Group as={Col} controlId="formGridParcelas">
           <Form.Label>Número de Parcelas</Form.Label>
           <Form.Control
-            type="number"
+            type="text"
             placeholder="Só números"
             onChange={(e) => setNParcelas(e.target.value)}
+            value={nParcelas}
           />
         </Form.Group>
 
@@ -48,6 +90,7 @@ export default function FormCalc() {
             type="text"
             placeholder="Em %"
             onChange={(e) => setTaxa(e.target.value)}
+            value={taxa}
           />
         </Form.Group>
 
@@ -75,11 +118,8 @@ export default function FormCalc() {
             type="text"
             placeholder="R$ 0,00"
             onChange={(e) => setVAtual(e.target.value)}
-            onBlur={(e) => {
-              const centena = vAtual * 100 + "";
-              const moeda = moedaHelper(centena);
-              return (e.target.value = moeda);
-            }}
+            onFocus={(e) => e.target.value = vAtual}
+            onBlur={(e) => e.target.value = formataMoeda(vAtual)}
           />
         </Form.Group>
 
@@ -92,22 +132,12 @@ export default function FormCalc() {
         </Form.Group>
       </Form.Row>
 
-      <Alert variant="success">
-        <Alert.Heading>Calculado com sucesso!</Alert.Heading>
-        <p>
-          Seu financiamento ficará em:{" "}
-          <strong>24 parcelas de {`R$ ${parcela}`}</strong>.
-        </p>
-        <hr />
-        <p className="mb-0">
-          <strong>Atenção: </strong>Esse cálculo não leva em consideração o IOF,
-          pois esse pode variar conforme o tipo de operação.
-        </p>
-      </Alert>
+      {screenState && <ShowAlert resultado={resultado} />}
 
-      <pre>{(parcela, vFuturo)}</pre>
+      {/* <pre>{nParcelas}</pre> */}
 
-      <Button type="submit" onClick={() => alert('Clicou!')}>Calcular</Button>
+      <Button type="submit" text="Calcular" />
+      <Button type="button" text="Limpar" onclick={(e) => handleClickLimpar(e)} />
     </Form>
   );
 }

@@ -34,6 +34,7 @@ export default function FormCalc() {
   const [parcela, setParcela] = React.useState("");
   const [vFuturo, setVFuturo] = React.useState("");
   const [screenState, setScreenState] = React.useState(false);
+  const [simulacoes, setSimulacoes] = React.useState([]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -47,6 +48,16 @@ export default function FormCalc() {
     setParcela(vParcela);
     setVFuturo(moedaHelper(valorFuturo));
     setScreenState(true);
+
+    addSimulacao({
+      vAtual, 
+      taxa, 
+      periodo, 
+      nParcelas, 
+      parcela, 
+      vFuturo
+    })
+    
   };
 
   const resultado = {
@@ -54,15 +65,24 @@ export default function FormCalc() {
     nParcelas,
   };
 
-  const handleClickLimpar = (e) => {
-    e.preventDefault();
+  function addSimulacao(simulacao) {
+    setSimulacoes([
+       ...simulacoes,
+       simulacao,
+    ])
+ }
 
+  const handleClickNovaSimulacao = (e) => {
+    e.preventDefault();
+    
     setScreenState(false);
     setParcela("");
     setVFuturo("");
     setNParcelas("");
     setTaxa("");
     setVAtual("");
+
+    console.log(simulacoes);
   }
 
   const formataMoeda = (valor)  => {
@@ -70,6 +90,7 @@ export default function FormCalc() {
     const moeda = moedaHelper(centena);
     return moeda;
   }
+
 
   return (
     <Form onSubmit={(e) => handleSubmit(e)}>
@@ -137,7 +158,7 @@ export default function FormCalc() {
       {/* <pre>{nParcelas}</pre> */}
 
       <Button type="submit" text="Calcular" />
-      <Button type="button" text="Limpar" onclick={(e) => handleClickLimpar(e)} />
+      <Button type="button" text="Nova simulação" onclick={(e) => handleClickNovaSimulacao(e)} />
     </Form>
   );
 }

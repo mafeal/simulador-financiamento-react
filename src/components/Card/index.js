@@ -16,18 +16,18 @@ const StyledHeader = styled(Card.Header)`
   padding: 10px;
 `
 
-export default function CardContainer() {
+export default function CardContainer(props) {
   return (
     <StyledCard>
       <StyledHeader  as="h5">
-        Simulador de financiamento
+        {props.header}
       </StyledHeader>
       <Card.Body>
-        <Card.Title>Insira os valores</Card.Title>
+        <Card.Title>{props.title}</Card.Title>
         <Card.Text>
-          Entre com pelo menos 3 valores para calcular o que se deseja.
+          {props.text}
         </Card.Text>
-        <Form />
+        {props.component}
       </Card.Body>
     </StyledCard>
   );

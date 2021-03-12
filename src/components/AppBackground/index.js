@@ -2,6 +2,7 @@
 import styled from "styled-components";
 
 const AppBackground = styled.div`
+  display: inline-flex;
   width: 100%;
   height: 100vh;
   background-size: cover;

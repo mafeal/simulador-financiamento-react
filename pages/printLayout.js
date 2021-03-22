@@ -16,8 +16,8 @@ const Container = styled.div`
 export default function Print() {
   const router = useRouter();
   const { simulacoesJson } = router.query;
-  let simulacoes = "";
-  simulacoesJson === undefined ? simulacoes = "" : simulacoes = JSON.parse(simulacoesJson);
+  let simulacoes = [];
+  simulacoesJson === undefined ? simulacoes = [] : simulacoes = JSON.parse(simulacoesJson);
 
   const handleClickImprimir = (e) => {
     e.preventDefault();

@@ -16,7 +16,8 @@ const Container = styled.div`
 export default function Print() {
   const router = useRouter();
   const { simulacoesJson } = router.query;
-  // const simulacoes = JSON.parse(simulacoesJson);
+  let simulacoes = "";
+  simulacoesJson === undefined ? simulacoes = "" : simulacoes = JSON.parse(simulacoesJson);
 
   const handleClickImprimir = (e) => {
     e.preventDefault();
@@ -31,7 +32,7 @@ export default function Print() {
       <Card className="text-center">
         <Card.Header as="h2">Simulação de Financiamento</Card.Header>
         <Card.Body>
-          <Table simulacoes={JSON.parse(simulacoesJson)} />
+          <Table simulacoes={simulacoes} />
           <Button
             type="button"
             text="Imprimir"

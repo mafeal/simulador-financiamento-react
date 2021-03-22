@@ -16,7 +16,7 @@ const Container = styled.div`
 export default function Print() {
   const router = useRouter();
   const { simulacoesJson } = router.query;
-  const simulacoes = JSON.parse(simulacoesJson);
+  // const simulacoes = JSON.parse(simulacoesJson);
 
   const handleClickImprimir = (e) => {
     e.preventDefault();
@@ -26,14 +26,12 @@ export default function Print() {
     window.print();
   };
 
-  const date = new Date();
-
   return (
     <Container>
       <Card className="text-center">
         <Card.Header as="h2">Simulação de Financiamento</Card.Header>
         <Card.Body>
-          <Table simulacoes={simulacoes} />
+          <Table simulacoes={JSON.parse(simulacoesJson)} />
           <Button
             type="button"
             text="Imprimir"

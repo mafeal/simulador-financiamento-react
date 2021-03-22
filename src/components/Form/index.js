@@ -1,8 +1,10 @@
 import React from "react";
 import Button from "../Button";
+import { useRouter } from 'next/router';
 import Form from "react-bootstrap/Form";
 import Col from "react-bootstrap/Col";
 import Alert from "react-bootstrap/Alert";
+import SimulationTable from "../SimulationTable";
 import moedaHelper from "../../helpers/moedaHelper";
 import calculaParcelas from "../../helpers/calculaParcelas";
 
@@ -13,15 +15,13 @@ function ShowAlert(props) {
       <p>
         Seu financiamento ficará em:{" "}
         <strong>
-          {`${props.resultado.nParcelas}`} parcelas de {`R$ ${props.resultado.parcela}`}
+          {`${props.resultado.nParcelas}`} parcelas de{" "}
+          {`R$ ${props.resultado.parcela}`}
         </strong>
         .
       </p>
       <hr />
-      <p className="mb-0 bg-warning">
-        <strong>Atenção: </strong>Esse cálculo não leva em consideração o IOF,
-        pois esse pode variar conforme o tipo de operação.
-      </p>
+      
     </Alert>
   );
 }
@@ -36,6 +36,8 @@ export default function FormCalc() {
   const [screenState, setScreenState] = React.useState(false);
   const [simulacoes, setSimulacoes] = React.useState([]);
 
+  const router = useRouter();
+
   const handleSubmit = (e) => {
     e.preventDefault();
     let [vParcela, valorFuturo] = calculaParcelas(
@@ -49,15 +51,16 @@ export default function FormCalc() {
     setVFuturo(moedaHelper(valorFuturo));
     setScreenState(true);
 
-    addSimulacao({
-      vAtual, 
-      taxa, 
-      periodo, 
-      nParcelas, 
-      parcela, 
-      vFuturo
-    })
+    let vFuturoFormatado = moedaHelper(valorFuturo)
     
+    addSimulacao({
+      vAtual,
+      taxa,
+      periodo,
+      nParcelas,
+      vParcela,
+      vFuturoFormatado,
+    });
   };
 
   const resultado = {
@@ -66,15 +69,12 @@ export default function FormCalc() {
   };
 
   function addSimulacao(simulacao) {
-    setSimulacoes([
-       ...simulacoes,
-       simulacao,
-    ])
- }
+    setSimulacoes([...simulacoes, simulacao]);
+  }
 
   const handleClickNovaSimulacao = (e) => {
     e.preventDefault();
-    
+
     setScreenState(false);
     setParcela("");
     setVFuturo("");
@@ -83,82 +83,93 @@ export default function FormCalc() {
     setVAtual("");
 
     console.log(simulacoes);
-  }
+  };
 
-  const formataMoeda = (valor)  => {
-    const centena = valor * 100 + "";
-    const moeda = moedaHelper(centena);
-    return moeda;
+  const handleClickImprimeSimulacao = (e) => {
+    e.preventDefault();
+    const simulacoesStringfied = JSON.stringify(simulacoes)
+    router.push(`/printLayout?simulacoesJson=${simulacoesStringfied}`);
   }
 
 
   return (
-    <Form onSubmit={(e) => handleSubmit(e)}>
-      <Form.Row>
-        <Form.Group as={Col} controlId="formGridParcelas">
-          <Form.Label>Número de Parcelas</Form.Label>
-          <Form.Control
-            type="text"
-            placeholder="Só números"
-            onChange={(e) => setNParcelas(e.target.value)}
-            value={nParcelas}
-          />
-        </Form.Group>
+    <>
+      <Form onSubmit={(e) => handleSubmit(e)}>
+        <Form.Row>
+          <Form.Group as={Col} controlId="formGridParcelas">
+            <Form.Label>Número de Parcelas</Form.Label>
+            <Form.Control
+              type="text"
+              placeholder="Só números"
+              onChange={(e) => setNParcelas(e.target.value)}
+              value={nParcelas}
+            />
+          </Form.Group>
 
-        <Form.Group as={Col} controlId="formGridTaxa">
-          <Form.Label>Taxa</Form.Label>
-          <Form.Control
-            type="text"
-            placeholder="Em %"
-            onChange={(e) => setTaxa(e.target.value)}
-            value={taxa}
-          />
-        </Form.Group>
+          <Form.Group as={Col} controlId="formGridTaxa">
+            <Form.Label>Taxa</Form.Label>
+            <Form.Control
+              type="text"
+              placeholder="Em %"
+              onChange={(e) => setTaxa(e.target.value)}
+              value={taxa}
+            />
+          </Form.Group>
 
-        <Form.Group as={Col} controlId="formGridPeriodo">
-          <Form.Label>Período</Form.Label>
-          <Form.Control
-            as="select"
-            defaultValue="Escolha..."
-            onChange={(e) => setPeriodo(e.target.value)}
-          >
-            <option>% ao mês</option>
-            <option>% ao ano</option>
-          </Form.Control>
-        </Form.Group>
-      </Form.Row>
+          <Form.Group as={Col} controlId="formGridPeriodo">
+            <Form.Label>Período</Form.Label>
+            <Form.Control
+              as="select"
+              defaultValue="Escolha..."
+              onChange={(e) => setPeriodo(e.target.value)}
+            >
+              <option>% ao mês</option>
+              <option>% ao ano</option>
+            </Form.Control>
+          </Form.Group>
+        </Form.Row>
 
-      <Form.Row>
-        <Form.Group as={Col} controlId="formGridVPresente">
-          <Form.Label>
-            Valor Financiado
-            <br />
-            (somente valores inteiros)
-          </Form.Label>
-          <Form.Control
-            type="text"
-            placeholder="R$ 0,00"
-            onChange={(e) => setVAtual(e.target.value)}
-            onFocus={(e) => e.target.value = vAtual}
-            onBlur={(e) => e.target.value = formataMoeda(vAtual)}
-          />
-        </Form.Group>
+        <Form.Row>
+          <Form.Group as={Col} controlId="formGridVPresente">
+            <Form.Label>
+              Valor Financiado
+              <br />
+              (somente valores inteiros)
+            </Form.Label>
+            <Form.Control
+              type="text"
+              placeholder="R$ 0,00"
+              onChange={(e) => setVAtual(e.target.value)}
+              value={vAtual}
+            />
+          </Form.Group>
 
-        <Form.Group as={Col} controlId="formGridVFuturo">
-          <Form.Label>
-            Valor Final
-            <br /> (somente leitura)
-          </Form.Label>
-          <Form.Control placeholder="R$ 0,00" readOnly value={vFuturo} />
-        </Form.Group>
-      </Form.Row>
+          <Form.Group as={Col} controlId="formGridVFuturo">
+            <Form.Label>
+              Valor Final
+              <br /> (somente leitura)
+            </Form.Label>
+            <Form.Control placeholder="R$ 0,00" readOnly value={vFuturo} />
+          </Form.Group>
+        </Form.Row>
 
-      {screenState && <ShowAlert resultado={resultado} />}
+        {screenState && <ShowAlert resultado={resultado} />}
 
-      {/* <pre>{nParcelas}</pre> */}
+        {/* <pre>{nParcelas}</pre> */}
 
-      <Button type="submit" text="Calcular" />
-      <Button type="button" text="Nova simulação" onclick={(e) => handleClickNovaSimulacao(e)} />
-    </Form>
+        <Button type="submit" text="Calcular" />
+        <Button
+          type="button"
+          text="Nova simulação"
+          onclick={(e) => handleClickNovaSimulacao(e)}
+        />
+        <Button
+          type="button"
+          text="Imprimir a simulação"
+          onclick={(e) => handleClickImprimeSimulacao(e)}
+        />
+      </Form>
+      <SimulationTable simulacoes={simulacoes} />
+    </>
   );
 }

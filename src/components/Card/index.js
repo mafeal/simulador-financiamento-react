@@ -1,8 +1,6 @@
 import React from "react";
 import styled from "styled-components";
 import Card from "react-bootstrap/Card";
-import Button from "react-bootstrap/Button";
-import Form from "../Form";
 
 const StyledCard = styled(Card)`
   margin: 15px;
